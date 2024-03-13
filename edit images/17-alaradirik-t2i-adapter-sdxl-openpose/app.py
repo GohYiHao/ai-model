@@ -21,8 +21,8 @@ headers = {
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PATCH"}
 
 with gr.Blocks() as demo:
-    owner = "rossjillian"
-    name = "controlnet"
+    owner = "alaradirik"
+    name = "t2i-adapter-sdxl-openpose"
     max_retries = 3
     retry_delay = 2
     for retry in range(max_retries):
@@ -138,7 +138,7 @@ with gr.Blocks() as demo:
             output_result = data.get("default_example", '').get("output")
             output_type= schema.get("Output", '').get("type", '')
             if output_type == 'array':
-                    output_image =  output_result[0]
+                    output_image =  output_result[1]
             else:
                 output_image = output_result
             outputs.append(gr.Image(value=output_image))
@@ -148,7 +148,7 @@ with gr.Blocks() as demo:
             
            
     
-    def run_process(input1,input2,input3,input4,input5,input6,input7,input8, input9, input10, input11, input12, input13, input14):
+    def run_process(input1,input2,input3,input4,input5,input6,input7,input8,input9,input10):
        global cancel_url
        global property_name_array
        print(len(property_name_array))
@@ -167,22 +167,19 @@ with gr.Blocks() as demo:
 
     
        body = {
-            "version": version,
+            "version": "ff250494f7328552c64ee50ae3ed9b61e09ca18c7aa51f77ed187a3fb9ec9093",
             "input": {
-                 property_name_array[0]:  data_uri_image,
+                 property_name_array[0]: data_uri_image, 
                  property_name_array[1]: input2,
-                 property_name_array[2]: input3, 
+                 property_name_array[2]: input3,
                  property_name_array[3]: input4,
                  property_name_array[4]: input5,
                  property_name_array[5]: input6,
                  property_name_array[6]: input7,
                  property_name_array[7]: input8,
-                 property_name_array[8]: input9, 
+                 property_name_array[8]: input9,
                  property_name_array[9]: input10,
-                 property_name_array[10]: input11, 
-                 property_name_array[11]: input12,
-                 property_name_array[12]: input13,
-                 property_name_array[13]: input14,    
+                
             }
             }
                
@@ -210,7 +207,7 @@ with gr.Blocks() as demo:
                 
        return gr.Image(),gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
     
-    def cancel_process(input1,input2,input3,input4,input5,input6,input7,input8, input9, input10, input11, input12, input13, input14):
+    def cancel_process(input1,input2,input3,input4,input5,input6,input7,input8,input9,input10):
         global cancel_url
         cancel_url = '123'
         global output_image
