@@ -21,8 +21,8 @@ headers = {
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PATCH"}
 
 with gr.Blocks() as demo:
-    owner = "tencentarc"
-    name = "vqfr"
+    owner = "lucataco"
+    name = "ip_adapter-sdxl-face"
     max_retries = 3
     retry_delay = 2
     for retry in range(max_retries):
@@ -138,8 +138,7 @@ with gr.Blocks() as demo:
             output_result = data.get("default_example", '').get("output")
             output_type= schema.get("Output", '').get("type", '')
             if output_type == 'array':
-                    print(output_type,"output_type")
-                    output_image =  output_result[3].get("image", '')
+                    output_image =  output_result[0]
             else:
                 output_image = output_result
             print (output_image)
@@ -150,7 +149,7 @@ with gr.Blocks() as demo:
             
            
     
-    def run_process(input1, input2):
+    def run_process(input1, input2, input3, input4, input5, input6, input7):
        global cancel_url
        global property_name_array
        print(len(property_name_array))
@@ -171,9 +170,13 @@ with gr.Blocks() as demo:
        body = {
             "version": version,
             "input": {
-                   property_name_array[0]:  data_uri_image, 
-                   property_name_array[1]:  input2,
-                             
+                    property_name_array[0]: data_uri_image,
+                    property_name_array[1]: input2,
+                    property_name_array[2]: input3,
+                    property_name_array[3]: input4,
+                    property_name_array[4]: input5,
+                    property_name_array[5]: input6,
+                    property_name_array[6]: input7,
             }
             }
                
@@ -190,11 +193,18 @@ with gr.Blocks() as demo:
             output =verify_image(identifier) 
             print(output,'333')
             if output:
-                     return  gr.Image(value=output[3].get("image", '')), gr.Image(),gr.Image(),gr.Image()
+                  if len(output) == 1:
+                     return  gr.Image(value=output[0]), gr.Image(),gr.Image(),gr.Image()
+                  elif len(output) == 2:
+                     return  gr.Image(value=output[0]), gr.Image(value=output[1],visible= True),gr.Image(),gr.Image()
+                  elif len(output) == 3:
+                     return  gr.Image(value=output[0]), gr.Image(value=output[1],visible= True),gr.Image(value=output[2],visible= True),gr.Image()
+                  elif len(output) == 3:
+                      return  gr.Image(value=output[0]), gr.Image(value=output[1],visible= True),gr.Image(value=output[2],visible= True),gr.Image(value=output[3],visible= True)
                 
        return gr.Image(),gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
     
-    def cancel_process(input1, input2):
+    def cancel_process(input1, input2, input3, input4, input5, input6, input7):
         global cancel_url
         cancel_url = '123'
         global output_image

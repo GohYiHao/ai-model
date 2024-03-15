@@ -21,8 +21,8 @@ headers = {
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PATCH"}
 
 with gr.Blocks() as demo:
-    owner = "tencentarc"
-    name = "vqfr"
+    owner = "arielreplicate"
+    name = "stable_diffusion_infinite_zoom"
     max_retries = 3
     retry_delay = 2
     for retry in range(max_retries):
@@ -91,9 +91,9 @@ with gr.Blocks() as demo:
                         if  property_info.get('format','') == 'uri':
                           
                                 if value :
-                                        inputs.insert(order, gr.Image(label=label, value=value, type="filepath"))
+                                        inputs.insert(order, gr.Video(label=label, value=value))
                                 else :
-                                        inputs.insert(order, gr.Image(label=label, type="filepath"))
+                                        inputs.insert(order, gr.Video(label=label))
                           
                         else:
                             if value == '':
@@ -122,7 +122,7 @@ with gr.Blocks() as demo:
                     else:
                         value= data.get('default_example', '').get('input','').get(property_name,'')
                         options=schema.get(property_name,'').get('enum',[])
-                        if value:
+                        if value == '':
                           inputs.insert(order, gr.Dropdown(label=property_name,info= description,choices=options, value=property_info.get("default", value)))
                         else: 
                           inputs.insert(order, gr.Dropdown(label=property_name,info= description,choices=options, value=value))  
@@ -138,45 +138,30 @@ with gr.Blocks() as demo:
             output_result = data.get("default_example", '').get("output")
             output_type= schema.get("Output", '').get("type", '')
             if output_type == 'array':
-                    print(output_type,"output_type")
-                    output_image =  output_result[3].get("image", '')
+                    output_image =  output_result
             else:
-                output_image = output_result
-            print (output_image)
-            outputs.append(gr.Image(value=output_image))
-            outputs.append(gr.Image(visible=False))
-            outputs.append(gr.Image(visible=False))
-            outputs.append(gr.Image(visible=False))
+                output_image = output_result.get("mp4",'')
+            print(output_image,'112121')
+            outputs.append(gr.Video(value=output_image))
+          
             
            
     
-    def run_process(input1, input2):
+    def run_process(input1, input2, input3):
        global cancel_url
        global property_name_array
        print(len(property_name_array))
        cancel_url=''
        url = 'https://replicate.com/api/predictions'
-      
-       if input1:
-            with open(input1, "rb") as file:
-                data = file.read()
-
-            base64_data = base64.b64encode(data).decode("utf-8")
-            mimetype = "image/jpg"
-            data_uri_image = f"data:{mimetype};base64,{base64_data}"
-       else:
-           data_uri_image=None
-
-       print(version, 'version')
+       
        body = {
-            "version": version,
-            "input": {
-                   property_name_array[0]:  data_uri_image, 
-                   property_name_array[1]:  input2,
-                             
-            }
-            }
-               
+                "version": version,
+                "input": {
+                    property_name_array[0]:  input1,
+                    property_name_array[1]:  input2,
+                    property_name_array[2]:  input3,
+                }
+                }
     
        response = requests.post(url, json=body)
        print(response.status_code)
@@ -190,15 +175,15 @@ with gr.Blocks() as demo:
             output =verify_image(identifier) 
             print(output,'333')
             if output:
-                     return  gr.Image(value=output[3].get("image", '')), gr.Image(),gr.Image(),gr.Image()
+                     return  gr.Video(value=output.get("mp4", ''))
                 
-       return gr.Image(),gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
+       return gr.Video()
     
-    def cancel_process(input1, input2):
+    def cancel_process(input1, input2, input3):
         global cancel_url
         cancel_url = '123'
         global output_image
-        return gr.Image(value=output_image), gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
+        return gr.Video(value=output_image)
 
     def verify_image(get_url):
         res = requests.get(get_url)

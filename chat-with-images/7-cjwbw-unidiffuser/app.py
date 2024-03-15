@@ -21,8 +21,8 @@ headers = {
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PATCH"}
 
 with gr.Blocks() as demo:
-    owner = "tencentarc"
-    name = "vqfr"
+    owner = "cjwbw"
+    name = "unidiffuser"
     max_retries = 3
     retry_delay = 2
     for retry in range(max_retries):
@@ -119,6 +119,7 @@ with gr.Blocks() as demo:
                            inputs.insert(order, gr.Checkbox(label=label,info= description, value=property_info.get('default', value)))
                         else:
                             inputs.insert(order, gr.Checkbox(label=label,info= description, value=value))
+                  
                     else:
                         value= data.get('default_example', '').get('input','').get(property_name,'')
                         options=schema.get(property_name,'').get('enum',[])
@@ -126,6 +127,7 @@ with gr.Blocks() as demo:
                           inputs.insert(order, gr.Dropdown(label=property_name,info= description,choices=options, value=property_info.get("default", value)))
                         else: 
                           inputs.insert(order, gr.Dropdown(label=property_name,info= description,choices=options, value=value))  
+                  
              
             with gr.Row():
                 cancel_btn = gr.Button("Cancel")
@@ -138,10 +140,9 @@ with gr.Blocks() as demo:
             output_result = data.get("default_example", '').get("output")
             output_type= schema.get("Output", '').get("type", '')
             if output_type == 'array':
-                    print(output_type,"output_type")
-                    output_image =  output_result[3].get("image", '')
+                    output_image =  ''.join(output_result)
             else:
-                output_image = output_result
+                output_image = output_result.get("generated_image",'')
             print (output_image)
             outputs.append(gr.Image(value=output_image))
             outputs.append(gr.Image(visible=False))
@@ -150,15 +151,15 @@ with gr.Blocks() as demo:
             
            
     
-    def run_process(input1, input2):
+    def run_process(input1, input2, input3, input4, input5, input6):
        global cancel_url
        global property_name_array
        print(len(property_name_array))
        cancel_url=''
        url = 'https://replicate.com/api/predictions'
       
-       if input1:
-            with open(input1, "rb") as file:
+       if input3:
+            with open(input3, "rb") as file:
                 data = file.read()
 
             base64_data = base64.b64encode(data).decode("utf-8")
@@ -168,15 +169,33 @@ with gr.Blocks() as demo:
            data_uri_image=None
 
        print(version, 'version')
-       body = {
-            "version": version,
-            "input": {
-                   property_name_array[0]:  data_uri_image, 
-                   property_name_array[1]:  input2,
-                             
-            }
-            }
-               
+       if input3:
+            body = {
+                    "version": version,
+                    "input": {
+                            property_name_array[0]: input1,
+                            property_name_array[1]: input2,
+                            property_name_array[2]: data_uri_image,
+                            property_name_array[3]: input4,
+                            property_name_array[4]: input5,
+                            property_name_array[5]: input6,
+
+                    }
+                    }
+     
+       else:
+             body = {
+                    "version": version,
+                    "input": {
+                            property_name_array[0]: input1,
+                            property_name_array[1]: input2,
+                            property_name_array[3]: input4,
+                            property_name_array[4]: input5,
+                            property_name_array[5]: input6,
+  
+                    }
+                    }
+         
     
        response = requests.post(url, json=body)
        print(response.status_code)
@@ -190,15 +209,15 @@ with gr.Blocks() as demo:
             output =verify_image(identifier) 
             print(output,'333')
             if output:
-                     return  gr.Image(value=output[3].get("image", '')), gr.Image(),gr.Image(),gr.Image()
+                     return  gr.TextArea(value=output.get("generated_image",'')), gr.Image(),gr.Image(),gr.Image()
                 
        return gr.Image(),gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
     
-    def cancel_process(input1, input2):
+    def cancel_process(input1, input2, input3, input4, input5, input6):
         global cancel_url
         cancel_url = '123'
         global output_image
-        return gr.Image(value=output_image), gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
+        return gr.TextArea(value=output_image), gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
 
     def verify_image(get_url):
         res = requests.get(get_url)

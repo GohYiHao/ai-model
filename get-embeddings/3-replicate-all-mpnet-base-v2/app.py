@@ -21,8 +21,8 @@ headers = {
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PATCH"}
 
 with gr.Blocks() as demo:
-    owner = "tencentarc"
-    name = "vqfr"
+    owner = "replicate"
+    name = "all-mpnet-base-v2"
     max_retries = 3
     retry_delay = 2
     for retry in range(max_retries):
@@ -138,12 +138,11 @@ with gr.Blocks() as demo:
             output_result = data.get("default_example", '').get("output")
             output_type= schema.get("Output", '').get("type", '')
             if output_type == 'array':
-                    print(output_type,"output_type")
-                    output_image =  output_result[3].get("image", '')
+                    output_image =  output_result
             else:
                 output_image = output_result
             print (output_image)
-            outputs.append(gr.Image(value=output_image))
+            outputs.append(gr.TextArea(value=output_image))
             outputs.append(gr.Image(visible=False))
             outputs.append(gr.Image(visible=False))
             outputs.append(gr.Image(visible=False))
@@ -156,24 +155,12 @@ with gr.Blocks() as demo:
        print(len(property_name_array))
        cancel_url=''
        url = 'https://replicate.com/api/predictions'
-      
-       if input1:
-            with open(input1, "rb") as file:
-                data = file.read()
-
-            base64_data = base64.b64encode(data).decode("utf-8")
-            mimetype = "image/jpg"
-            data_uri_image = f"data:{mimetype};base64,{base64_data}"
-       else:
-           data_uri_image=None
-
-       print(version, 'version')
+     
        body = {
             "version": version,
             "input": {
-                   property_name_array[0]:  data_uri_image, 
-                   property_name_array[1]:  input2,
-                             
+                    property_name_array[0]: input1,
+                    property_name_array[1]: input2,  
             }
             }
                
@@ -190,7 +177,7 @@ with gr.Blocks() as demo:
             output =verify_image(identifier) 
             print(output,'333')
             if output:
-                     return  gr.Image(value=output[3].get("image", '')), gr.Image(),gr.Image(),gr.Image()
+                     return  gr.TextArea(value=output), gr.Image(),gr.Image(),gr.Image()
                 
        return gr.Image(),gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
     
@@ -198,7 +185,7 @@ with gr.Blocks() as demo:
         global cancel_url
         cancel_url = '123'
         global output_image
-        return gr.Image(value=output_image), gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
+        return gr.TextArea(value=output_image), gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
 
     def verify_image(get_url):
         res = requests.get(get_url)

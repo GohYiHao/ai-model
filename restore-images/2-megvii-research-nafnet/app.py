@@ -149,7 +149,7 @@ with gr.Blocks() as demo:
             
            
     
-    def run_process(input1, input2 ,input3, input4):
+    def run_process(input1, input2 ,input3):
        global cancel_url
        global property_name_array
        print(len(property_name_array))
@@ -179,7 +179,7 @@ with gr.Blocks() as demo:
        print(version, 'version')
        if input3:
            body = {
-            "version": "660d922d33153019e8c263a3bba265de882e7f4f70396546b6c9c8f9d47a021a",
+            "version": "018241a6c880319404eaa2714b764313e27e11f950a7ff0a7b5b37b27b74dcf7",
             "input": {
                    property_name_array[0]:  input1,
                    property_name_array[1]:  data_uri_image,
@@ -189,7 +189,7 @@ with gr.Blocks() as demo:
             }
        else:
            body = {
-            "version": "660d922d33153019e8c263a3bba265de882e7f4f70396546b6c9c8f9d47a021a",
+            "version": "018241a6c880319404eaa2714b764313e27e11f950a7ff0a7b5b37b27b74dcf7",
             "input": {
                    property_name_array[0]:  input1,
                    property_name_array[1]:  data_uri_image,

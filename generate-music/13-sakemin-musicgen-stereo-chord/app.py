@@ -21,8 +21,8 @@ headers = {
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PATCH"}
 
 with gr.Blocks() as demo:
-    owner = "tencentarc"
-    name = "vqfr"
+    owner = "sakemin"
+    name = "musicgen-stereo-chord"
     max_retries = 3
     retry_delay = 2
     for retry in range(max_retries):
@@ -91,9 +91,9 @@ with gr.Blocks() as demo:
                         if  property_info.get('format','') == 'uri':
                           
                                 if value :
-                                        inputs.insert(order, gr.Image(label=label, value=value, type="filepath"))
+                                        inputs.insert(order, gr.Audio(label=label, value=value, type="filepath"))
                                 else :
-                                        inputs.insert(order, gr.Image(label=label, type="filepath"))
+                                        inputs.insert(order, gr.Audio(label=label, type="filepath"))
                           
                         else:
                             if value == '':
@@ -122,7 +122,7 @@ with gr.Blocks() as demo:
                     else:
                         value= data.get('default_example', '').get('input','').get(property_name,'')
                         options=schema.get(property_name,'').get('enum',[])
-                        if value:
+                        if value == '':
                           inputs.insert(order, gr.Dropdown(label=property_name,info= description,choices=options, value=property_info.get("default", value)))
                         else: 
                           inputs.insert(order, gr.Dropdown(label=property_name,info= description,choices=options, value=value))  
@@ -138,44 +138,75 @@ with gr.Blocks() as demo:
             output_result = data.get("default_example", '').get("output")
             output_type= schema.get("Output", '').get("type", '')
             if output_type == 'array':
-                    print(output_type,"output_type")
-                    output_image =  output_result[3].get("image", '')
+                    output_image =  output_result
             else:
                 output_image = output_result
-            print (output_image)
-            outputs.append(gr.Image(value=output_image))
-            outputs.append(gr.Image(visible=False))
-            outputs.append(gr.Image(visible=False))
-            outputs.append(gr.Image(visible=False))
+            print(output_image,'112121')
+            outputs.append(gr.Audio(value=output_image))
+          
             
            
     
-    def run_process(input1, input2):
+    def run_process(input1, input2, input3, input4, input5, input6, input7, input8, input9, input10, input11, input12, input13, input14, input15, input16, input17, input18, input19):
        global cancel_url
        global property_name_array
        print(len(property_name_array))
        cancel_url=''
        url = 'https://replicate.com/api/predictions'
-      
-       if input1:
-            with open(input1, "rb") as file:
+       
+       if input6:
+            with open(input6, "rb") as file:
                 data = file.read()
 
             base64_data = base64.b64encode(data).decode("utf-8")
             mimetype = "image/jpg"
-            data_uri_image = f"data:{mimetype};base64,{base64_data}"
+            data_uri_audio = f"data:{mimetype};base64,{base64_data}"
        else:
-           data_uri_image=None
+           data_uri_audio=None
 
-       print(version, 'version')
-       body = {
-            "version": version,
-            "input": {
-                   property_name_array[0]:  data_uri_image, 
-                   property_name_array[1]:  input2,
-                             
-            }
-            }
+       if input3:
+            body = {
+                    "version": version,
+                    "input": {
+                        property_name_array[0]:  input1,
+                        property_name_array[1]:  input2,
+                        property_name_array[1]:  input3,
+                        property_name_array[3]:  input4,
+                        property_name_array[4]:  input5,
+                        property_name_array[5]:  data_uri_audio,
+                        property_name_array[6]:  input7,
+                        property_name_array[7]:  input8,
+                        property_name_array[8]:  input9,
+                        property_name_array[9]:  input10,
+                        property_name_array[10]:  input11,
+                        property_name_array[11]:  input12,
+                        property_name_array[12]:  input13,
+                        property_name_array[13]:  input14,
+                        property_name_array[14]:  input15,
+                        
+                    }
+                    }
+       else:
+            body = {
+                    "version": version,
+                    "input": {
+                      
+                        property_name_array[0]:  input1,
+                        property_name_array[1]:  input2,
+                        property_name_array[2]:  input3,
+                        property_name_array[3]:  input4,
+                        property_name_array[4]:  input5,
+                        property_name_array[6]:  input7,
+                        property_name_array[7]:  input8,
+                        property_name_array[8]:  input9,
+                        property_name_array[9]:  input10,
+                        property_name_array[10]:  input11,
+                        property_name_array[11]:  input12,
+                        property_name_array[12]:  input13,
+                        property_name_array[13]:  input14,
+          
+                    }
+                    }
                
     
        response = requests.post(url, json=body)
@@ -190,15 +221,15 @@ with gr.Blocks() as demo:
             output =verify_image(identifier) 
             print(output,'333')
             if output:
-                     return  gr.Image(value=output[3].get("image", '')), gr.Image(),gr.Image(),gr.Image()
+                     return  gr.Audio(value=output)
                 
-       return gr.Image(),gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
+       return gr.Audio()
     
-    def cancel_process(input1, input2):
+    def cancel_process(input1, input2, input3, input4, input5, input6, input7, input8, input9, input10, input11, input12, input13, input14, input15, input16, input17, input18, input19):
         global cancel_url
         cancel_url = '123'
         global output_image
-        return gr.Image(value=output_image), gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
+        return gr.Audio(value=output_image)
 
     def verify_image(get_url):
         res = requests.get(get_url)

@@ -21,8 +21,8 @@ headers = {
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PATCH"}
 
 with gr.Blocks() as demo:
-    owner = "tencentarc"
-    name = "vqfr"
+    owner = "lucataco"
+    name = "modelscope-facefusion"
     max_retries = 3
     retry_delay = 2
     for retry in range(max_retries):
@@ -138,8 +138,7 @@ with gr.Blocks() as demo:
             output_result = data.get("default_example", '').get("output")
             output_type= schema.get("Output", '').get("type", '')
             if output_type == 'array':
-                    print(output_type,"output_type")
-                    output_image =  output_result[3].get("image", '')
+                    output_image =  output_result[0]
             else:
                 output_image = output_result
             print (output_image)
@@ -167,13 +166,22 @@ with gr.Blocks() as demo:
        else:
            data_uri_image=None
 
+       if input2:
+            with open(input2, "rb") as file:
+                data = file.read()
+
+            base64_data = base64.b64encode(data).decode("utf-8")
+            mimetype = "image/jpg"
+            user_image = f"data:{mimetype};base64,{base64_data}"
+       else:
+           user_image=None
+
        print(version, 'version')
        body = {
             "version": version,
             "input": {
-                   property_name_array[0]:  data_uri_image, 
-                   property_name_array[1]:  input2,
-                             
+                    property_name_array[0]: data_uri_image,
+                    property_name_array[1]: user_image,
             }
             }
                
@@ -190,7 +198,14 @@ with gr.Blocks() as demo:
             output =verify_image(identifier) 
             print(output,'333')
             if output:
-                     return  gr.Image(value=output[3].get("image", '')), gr.Image(),gr.Image(),gr.Image()
+                  if len(output) == 1:
+                     return  gr.Image(value=output[0]), gr.Image(),gr.Image(),gr.Image()
+                  elif len(output) == 2:
+                     return  gr.Image(value=output[0]), gr.Image(value=output[1],visible= True),gr.Image(),gr.Image()
+                  elif len(output) == 3:
+                     return  gr.Image(value=output[0]), gr.Image(value=output[1],visible= True),gr.Image(value=output[2],visible= True),gr.Image()
+                  elif len(output) == 3:
+                      return  gr.Image(value=output[0]), gr.Image(value=output[1],visible= True),gr.Image(value=output[2],visible= True),gr.Image(value=output[3],visible= True)
                 
        return gr.Image(),gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
     

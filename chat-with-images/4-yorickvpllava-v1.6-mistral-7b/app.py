@@ -21,8 +21,8 @@ headers = {
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PATCH"}
 
 with gr.Blocks() as demo:
-    owner = "tencentarc"
-    name = "vqfr"
+    owner = "yorickvp"
+    name = "llava-v1.6-vicuna-13b"
     max_retries = 3
     retry_delay = 2
     for retry in range(max_retries):
@@ -119,13 +119,13 @@ with gr.Blocks() as demo:
                            inputs.insert(order, gr.Checkbox(label=label,info= description, value=property_info.get('default', value)))
                         else:
                             inputs.insert(order, gr.Checkbox(label=label,info= description, value=value))
-                    else:
-                        value= data.get('default_example', '').get('input','').get(property_name,'')
-                        options=schema.get(property_name,'').get('enum',[])
-                        if value:
-                          inputs.insert(order, gr.Dropdown(label=property_name,info= description,choices=options, value=property_info.get("default", value)))
-                        else: 
-                          inputs.insert(order, gr.Dropdown(label=property_name,info= description,choices=options, value=value))  
+                    else :
+                         value= data.get('default_example', '').get('input','').get(property_name,'')
+                         if value == '':
+                           inputs.insert(order, gr.Textbox(label=label,info= description, value=property_info.get('default', value)))
+                         else:
+                            inputs.insert(order, gr.Textbox(label=label,info= description, value=value))
+                  
              
             with gr.Row():
                 cancel_btn = gr.Button("Cancel")
@@ -138,19 +138,18 @@ with gr.Blocks() as demo:
             output_result = data.get("default_example", '').get("output")
             output_type= schema.get("Output", '').get("type", '')
             if output_type == 'array':
-                    print(output_type,"output_type")
-                    output_image =  output_result[3].get("image", '')
+                    output_image =  ''.join(output_result)
             else:
                 output_image = output_result
             print (output_image)
-            outputs.append(gr.Image(value=output_image))
+            outputs.append(gr.TextArea(value=output_image))
             outputs.append(gr.Image(visible=False))
             outputs.append(gr.Image(visible=False))
             outputs.append(gr.Image(visible=False))
             
            
     
-    def run_process(input1, input2):
+    def run_process(input1, input2, input3, input4, input5, input6 ):
        global cancel_url
        global property_name_array
        print(len(property_name_array))
@@ -168,15 +167,31 @@ with gr.Blocks() as demo:
            data_uri_image=None
 
        print(version, 'version')
-       body = {
-            "version": version,
-            "input": {
-                   property_name_array[0]:  data_uri_image, 
-                   property_name_array[1]:  input2,
-                             
-            }
-            }
-               
+       if input1:
+            body = {
+                    "version": "0603dec596080fa084e26f0ae6d605fc5788ed2b1a0358cd25010619487eae63",
+                    "input": {
+                            property_name_array[0]: data_uri_image,
+                            property_name_array[1]: input2,
+                            property_name_array[2]: input3,
+                            property_name_array[3]: input4,
+                            property_name_array[4]: input5,
+                        
+                    }
+                    }
+     
+       else:
+             body = {
+                    "version": "0603dec596080fa084e26f0ae6d605fc5788ed2b1a0358cd25010619487eae63",
+                    "input": {
+                            property_name_array[1]: input2,
+                            property_name_array[2]: input3,
+                            property_name_array[3]: input4,
+                            property_name_array[4]: input5,
+                        
+                    }
+                    }
+         
     
        response = requests.post(url, json=body)
        print(response.status_code)
@@ -190,15 +205,15 @@ with gr.Blocks() as demo:
             output =verify_image(identifier) 
             print(output,'333')
             if output:
-                     return  gr.Image(value=output[3].get("image", '')), gr.Image(),gr.Image(),gr.Image()
+                     return  gr.TextArea(value=''.join(output)), gr.Image(),gr.Image(),gr.Image()
                 
        return gr.Image(),gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
     
-    def cancel_process(input1, input2):
+    def cancel_process(input1, input2, input3, input4, input5, input6):
         global cancel_url
         cancel_url = '123'
         global output_image
-        return gr.Image(value=output_image), gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
+        return gr.TextArea(value=output_image), gr.Image(visible=False),gr.Image(visible=False),gr.Image(visible=False)
 
     def verify_image(get_url):
         res = requests.get(get_url)

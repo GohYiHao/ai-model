@@ -169,7 +169,7 @@ with gr.Blocks() as demo:
 
        print(version, 'version')
        body = {
-            "version": "494ca4d578293b4b93945115601b6a38190519da18467556ca223d219c3af9f9",
+            "version": "9451bfbf652b21a9bccc741e5c7046540faa5586cfa3aa45abc7dbb46151a4f7",
             "input": {
                    property_name_array[0]:  data_uri_image, 
                    property_name_array[1]:  input2,
